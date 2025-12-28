@@ -4,12 +4,14 @@ import logo from "../assets/Final Logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { Loader2 } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const [loginAs, setLoginAs] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password || !loginAs) {
@@ -17,10 +19,11 @@ export default function Login() {
       return;
     }
     try {
+      setIsLoading(true);
       const res = await axios.post("http://localhost:8080/api/login", {
         email,
         password,
-        user_type: loginAs,
+        userType: loginAs,
       });
 
       localStorage.setItem("isLoggedIn", "true");
@@ -36,8 +39,10 @@ export default function Login() {
       if (err.response && err.response.data) {
         Swal.fire("Error", err.response.data, "error");
       } else {
-        Swal.fire("Error","Server error, please try again", "error");
+        Swal.fire("Error", "Server error, please try again", "error");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -102,13 +107,19 @@ export default function Login() {
             required
           />
           <h5 className="w-full text-blue-700 font-medium text-end p-2.5">
-            <Link>Forgot Password?</Link>
+            <Link to="/ForgotPassword">Forgot Password?</Link>
           </h5>
           <button
-            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
+            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
             onClick={handleLogin}
           >
-            Sign In
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin w-5 h-5" />
+              </>
+            ) : (
+              "Sign In"
+            )}
           </button>
           <h5 className="font-medium mb-6 text-center pt-2.5">
             New User?{" "}

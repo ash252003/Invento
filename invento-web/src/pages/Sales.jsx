@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import Aside from "../components/AsideBar";
 import Swal from "sweetalert2";
+import { Loader2 } from "lucide-react";
 
 export default function () {
   const [salesReport, setSalesReport] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const generateReport = async (e) => {
     e.preventDefault();
@@ -18,6 +20,7 @@ export default function () {
     }
 
     try {
+      setIsLoading(true);
       const response = await fetch(
         `http://localhost:8080/api/sales-report?fromDate=${startDate}&toDate=${endDate}&name=${salesReport}`
       );
@@ -38,6 +41,8 @@ export default function () {
       Swal.fire("Success", "Report Generated Successfully", "success");
     } catch {
       Swal.fire("Error", "Error downloading report", "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -66,7 +71,7 @@ export default function () {
                 onChange={(e) => setSalesReport(e.target.value)}
               >
                 <optgroup>
-                  <option value=''>Select Report Type</option>
+                  <option value="">Select Report Type</option>
                   <option value="Monthly Sales Report">
                     Monthly Sales Report
                   </option>
@@ -96,8 +101,18 @@ export default function () {
             </div>
           </div>
           <div className="mt-6 w-full md:w-2/3 lg:w-1/2 mx-auto">
-            <button className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
-              Generate Report
+            <button
+              disabled={isLoading}
+              className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin w-5 h-5" />
+                  Generating...
+                </>
+              ) : (
+                "Generate Report"
+              )}
             </button>
           </div>
         </form>

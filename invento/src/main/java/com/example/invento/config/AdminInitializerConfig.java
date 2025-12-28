@@ -22,7 +22,7 @@ public class AdminInitializerConfig {
                 userMaster.setEmail("admin@invento.com");
                 userMaster.setPassword(passwordEncoder.encode("admin123"));
                 userMaster.setPhone("9999999999");
-                userMaster.setUser_type("admin");
+                userMaster.setUserType("admin");
                 userMaster.setStatus(0);
                 userRepository.save(userMaster);
             }

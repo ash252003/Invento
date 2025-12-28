@@ -5,6 +5,8 @@ import { CirclePlus, X } from "lucide-react";
 import { data } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { Loader2 } from "lucide-react";
+
 export default function Billing() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [products, setProducts] = useState([]);
@@ -18,6 +20,7 @@ export default function Billing() {
   const [transactionDate, setTransactionDate] = useState("");
   const [customers, setCustomer] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const totalAmount = invoiceItems.reduce(
     (sum, item) => sum + item.product_selling_price * item.quantity,
@@ -84,6 +87,7 @@ export default function Billing() {
       })),
     };
     try {
+      setIsLoading(true);
       const res = await axios.post(
         `http://localhost:8080/api/addTransaction/${userId}/${customer.id}`,
         transactionPayload
@@ -100,7 +104,9 @@ export default function Billing() {
       setCustomerAddress("");
       setTransactionDate("");
     } catch (err) {
-      Swal.fire("Error", {err}, "error");
+      Swal.fire("Error", { err }, "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -274,10 +280,18 @@ export default function Billing() {
           <div className="mt-6 w-full md:w-2/3 lg:w-1/2 mx-auto mb-6">
             <button
               type="button"
-              className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
+              className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
               onClick={handleTransaction}
+              disabled={isLoading}
             >
-              Generate Invoice
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin w-5 h-5" />
+                  Generating...
+                </>
+              ) : (
+                "Generate Invoice"
+              )}
             </button>
           </div>
         </form>

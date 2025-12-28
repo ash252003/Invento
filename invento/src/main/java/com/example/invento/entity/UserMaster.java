@@ -34,7 +34,12 @@ public class UserMaster {
 
     @Getter
     @Setter
-    private String user_type;
+    @Column(name = "user_type")
+    private String userType;
+
+    @Getter
+    @Setter
+    private String otp;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductMaster> products = new ArrayList<>();

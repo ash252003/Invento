@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { Loader2 } from "lucide-react";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ export default function SignUp() {
   const [confirmPass, setConfirmPass] = useState("");
   const status = 1;
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async () => {
     if (!email || !password || !phone || !confirmPass) {
@@ -24,6 +26,7 @@ export default function SignUp() {
     }
 
     try {
+      setIsLoading(true);
       const res = await axios.post("http://localhost:8080/api/register", {
         email: email,
         password: password,
@@ -33,6 +36,8 @@ export default function SignUp() {
       navigate("/");
     } catch (err) {
       Swal.fire("Error", "Something Went Wrong! Please Try Later", "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -72,7 +77,7 @@ export default function SignUp() {
           <div className="w-full flex justify-start pb-0.5 pt-5">
             <h1 className="text-2xl font-bold mb-6 text-cente">Sign Up</h1>
           </div>
-          
+
           <input
             type="email"
             placeholder="Email Id"
@@ -109,10 +114,17 @@ export default function SignUp() {
             required
           />
           <button
-            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
+            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
             onClick={handleRegister}
+            disabled={isLoading}
           >
-            Sign Up
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin w-5 h-5" />
+              </>
+            ) : (
+              "Sign Up"
+            )}
           </button>
           <div className="flex justify-center items-center w-full">
             <p className="">Already Have An Account?</p>
